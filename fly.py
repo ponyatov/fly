@@ -65,7 +65,9 @@ class Symbol(Frame): pass
 
 class Number(Frame): pass
 
-class Integer(Number): pass
+class Integer(Number):
+    def toint(self):
+        return self
 
 class Hex(Integer):
     def str(self):
@@ -159,9 +161,13 @@ W << FILE
 
 import ply.lex as lex
 
-tokens = ['symbol','string','hex']
+tokens = ['symbol','string','hex','integer']
 
 t_ignore = ' \t\r\n'
+
+def t_comment(t):
+    r'[\#\\].*\n'
+    pass
 
 states = (('str','exclusive'),)
 t_str_ignore = ''
@@ -178,13 +184,13 @@ def t_str_char(t):
     r'.'
     t.lexer.lexstring += t.value
 
-def t_comment(t):
-    r'[\#\\].*\n'
-    pass
-
-def t_hex_prefix(t):
+def t_hex(t):
     r'0x[0-9a-fA-F]+'
     return Hex(int(t.value[2:],0x10))
+
+def t_integer(t):
+    r'[\+\-]?[0-9]+'
+    return Integer(int(t.value))
 
 def t_symbol(t):
     r'[`]|[^ \t\r\n]+'
