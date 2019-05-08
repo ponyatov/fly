@@ -27,7 +27,9 @@ class Frame:
     def pad(self,N):
         return '\n' + '\t' * N
     def head(self,prefix=''):
-        return '%s<%s:%s> @%x' % (prefix, self.type, self.val, id(self))
+        return '%s<%s:%s> @%x' % (prefix, self.type, self.str(), id(self))
+    def str(self):
+        return self.val
 
     ## manipulations
     
@@ -60,6 +62,16 @@ class Frame:
 class String(Frame): pass
 
 class Symbol(Frame): pass
+
+class Number(Frame): pass
+
+class Integer(Number): pass
+
+class Hex(Integer):
+    def str(self):
+        return '%X' % self.val
+    def toint(self):
+        return Integer(self.val)
 
 ##################################################################### container
         
@@ -97,25 +109,32 @@ W = Dict('FORTH')
 W['W'] = W
 W['S'] = S
 
-################################################################# manipulations
-
-def ST(): B = S.pop() ; W[B.val] = S.pop()
-W['!'] = Cmd(ST)
-
-def pST():
-    C = S.pop() ; B = S.pop() ; A = S.pop() ; C[B.val] = A
-W['.!'] = Cmd(pST)
-
-def LSHIFT(): B = S.pop() ; S.top() << B
-W['<<'] = Cmd(LSHIFT)
-
 ######################################################################### stack
 
 def DROPALL(): S.dropall()
 W['.'] = Cmd(DROPALL)
 
+################################################################# manipulations
+
+## '! ( a b -- b/a )` push
+def ST(): B = S.pop() ; W[B.val] = S.pop()
+W['!'] = Cmd(ST)
+
+def pST(): C = S.pop() ; B = S.pop() ; A = S.pop() ; C[B.val] = A
+W['.!'] = Cmd(pST)
+
+def LSHIFT(): B = S.pop() ; S.top() << B
+W['<<'] = Cmd(LSHIFT)
+
+#################################################################### conversion
+
+## `>int ( a -- a.int )` convert to integer
+def toINT(): S // S.pop().toint()
+W['>INT'] = Cmd(toINT)
+
 ######################################################################### debug
 
+## `( -- )` stop system
 def BYE(): sys.exit(0)
 W << BYE
 
@@ -140,7 +159,7 @@ W << FILE
 
 import ply.lex as lex
 
-tokens = ['symbol','string']
+tokens = ['symbol','string','hex']
 
 t_ignore = ' \t\r\n'
 
@@ -162,6 +181,11 @@ def t_str_char(t):
 def t_comment(t):
     r'[\#\\].*\n'
     pass
+
+def t_hex_prefix(t):
+    r'0x[0-9a-fA-F]+'
+    return Hex(int(t.value[2:],0x10))
+
 def t_symbol(t):
     r'[`]|[^ \t\r\n]+'
     return Symbol(t.value)
@@ -204,10 +228,11 @@ def REPL():
     while True:
         print S
         try:
-            S // String(raw_input('ok> '))
+            print '\n' + '-'*40
+            S // String(raw_input('fly> '))
             INTERPRET()
         except EOFError:
-            print '\n' + '-'*40
+            print '\n' + '='*40
             break
             
 W << REPL        
