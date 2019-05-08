@@ -1,6 +1,7 @@
+
 import os,sys ; print sys.argv
 
-################################################################## frame system
+################################################################# frame system
 
 class Frame:
     def __init__(self,V):
@@ -57,13 +58,15 @@ class Frame:
         S // self
         
     
-##################################################################### primitive
+#################################################################### primitive
+
+class Primitive(Frame): pass
         
-class String(Frame): pass
+class String(Primitive): pass
 
-class Symbol(Frame): pass
+class Symbol(Primitive): pass
 
-class Number(Frame): pass
+class Number(Primitive): pass
 
 class Integer(Number):
     def toint(self):
@@ -75,26 +78,32 @@ class Hex(Integer):
     def toint(self):
         return Integer(self.val)
 
-##################################################################### container
+#################################################################### container
         
-class Stack(Frame): pass
+class Container(Frame): pass
 
-class Dict(Frame):
+class Stack(Container): pass
+
+class Dict(Container):
     def __lshift__(self,F):
         if callable(F): return self << Cmd(F)
         else: return Frame.__lshift__(self, F)
+        
+class Vector(Container): pass        
 
-######################################################################## active
+####################################################################### active
 
-class Cmd(Frame):
+class Active(Frame): pass
+
+class Cmd(Active):
     def __init__(self,F,I=False):
         Frame.__init__(self, F.__name__)
         self.fn = F
         self.immed = I
     def execute(self):
         self.fn()
-        
-############################################################### metaprogramming
+
+############################################################## metaprogramming
 
 class Meta(Frame): pass
 
@@ -102,7 +111,7 @@ class Module(Meta): pass
 
 class File(Meta): pass
 
-######################################################### virtual FORTH machine
+######################################################## virtual FORTH machine
 
 S = Stack('DATA')
 
@@ -111,14 +120,13 @@ W = Dict('FORTH')
 W['W'] = W
 W['S'] = S
 
-######################################################################### stack
+######################################################################## stack
 
 def DROPALL(): S.dropall()
 W['.'] = Cmd(DROPALL)
 
-################################################################# manipulations
+################################################################ manipulations
 
-## '! ( a b -- b/a )` push
 def ST(): B = S.pop() ; W[B.val] = S.pop()
 W['!'] = Cmd(ST)
 
@@ -128,15 +136,13 @@ W['.!'] = Cmd(pST)
 def LSHIFT(): B = S.pop() ; S.top() << B
 W['<<'] = Cmd(LSHIFT)
 
-#################################################################### conversion
+################################################################### conversion
 
-## `>int ( a -- a.int )` convert to integer
 def toINT(): S // S.pop().toint()
 W['>INT'] = Cmd(toINT)
 
-######################################################################### debug
+######################################################################## debug
 
-## `( -- )` stop system
 def BYE(): sys.exit(0)
 W << BYE
 
@@ -146,7 +152,7 @@ W['?'] = Cmd(Q,I=True)
 def QQ(): print W ; BYE()
 W['??'] = Cmd(QQ,I=True)
 
-############################################################### metaprogramming
+############################################################## metaprogramming
 
 def META(): S // Meta(S.pop().val)
 W << META
@@ -157,7 +163,7 @@ W << MODULE
 def FILE(): S // File(S.pop().val)
 W << FILE
 
-############################################################# PLY powered lexer
+############################################################ PLY powered lexer
 
 import ply.lex as lex
 
@@ -200,7 +206,7 @@ def t_ANY_error(t): raise SyntaxError(t)
 
 lexer = lex.lex()
 
-################################################################### interpreter
+################################################################## interpreter
 
 def QUOTE():
     WORD()
@@ -242,13 +248,15 @@ def REPL():
             break
             
 W << REPL        
-        
-################################################################### system init
 
-infiles = sys.argv[1:] ; print infiles
-if not infiles:
-    S // String(open('fly.fly').read()) ; INTERPRET()
-    REPL()
-else:    
-    for i in infiles:
-        S // String(open(i).read()) ; INTERPRET()
+################################################################## system init
+
+def INIT():
+    infiles = sys.argv[1:] ; print infiles
+    if not infiles:
+        S // String(open('fly.fly').read()) ; INTERPRET()
+        REPL()
+    else:    
+        for i in infiles:
+            S // String(open(i).read()) ; INTERPRET()
+INIT()
