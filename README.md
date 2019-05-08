@@ -1,5 +1,5 @@
 # fly
-## homoiconic frame language
+## homoiconic frame script language
 
 (c) Dmitry Ponyatov <<dponyatov@gmail.com>> CC BY-NC-ND
 

@@ -3,7 +3,7 @@
 `fly module ? `MODULE ? !
 W `INFO meta <<
 										`MODULE 	INFO .!
-	'frame homoiconic language' 				`TITLE		INFO .!
+	'homoiconic frame script language' 			`TITLE		INFO .!
 	'Dmitry Ponyatov <<dponyatov@gmail.com>>'	`AUTHOR		INFO .!
 	'https://bitbucket.org/ponyatov/fly/'		`GITHUB		INFO .!
 	'CC BY-NC-ND'								`LICENSE	INFO .!
