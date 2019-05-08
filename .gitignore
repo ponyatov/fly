@@ -1,0 +1,9 @@
+*~
+*.swp
+*.pyc
+*.exe
+*.o
+*.log
+wiki/
+docs/
+
