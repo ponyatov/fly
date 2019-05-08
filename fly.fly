@@ -1,6 +1,6 @@
 # fly : frame homoiconic language
 
-`fly module ? `MODULE ! ??
+`fly module ? `MODULE ? !
 W `INFO meta <<
 										`MODULE 	INFO .!
 	'frame homoiconic language' 				`TITLE		INFO .!
@@ -10,4 +10,3 @@ W `INFO meta <<
 .
 
 `README.md file
-??

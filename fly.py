@@ -99,7 +99,7 @@ W['S'] = S
 
 ################################################################# manipulations
 
-def ST(): W[S.pop().val] = S.pop()
+def ST(): B = S.pop() ; W[B.val] = S.pop()
 W['!'] = Cmd(ST)
 
 def pST():
@@ -200,9 +200,24 @@ def INTERPRET():
             FIND()
         EXECUTE()
         
+def REPL():
+    while True:
+        print S
+        try:
+            S // String(raw_input('ok> '))
+            INTERPRET()
+        except EOFError:
+            print '\n' + '-'*40
+            break
+            
+W << REPL        
+        
 ################################################################### system init
 
 infiles = sys.argv[1:] ; print infiles
-if not infiles: infiles += ['fly.fly']
-for i in infiles:
-    S // String(open(i).read()) ; INTERPRET()
+if not infiles:
+    S // String(open('fly.fly').read()) ; INTERPRET()
+    REPL()
+else:    
+    for i in infiles:
+        S // String(open(i).read()) ; INTERPRET()
