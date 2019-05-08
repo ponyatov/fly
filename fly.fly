@@ -1,8 +1,13 @@
 # fly : frame homoiconic language
 
+`fly module ? `MODULE ! ??
 W `INFO meta <<
-	`fly module									`MODULE 	INFO .!
+										`MODULE 	INFO .!
 	'frame homoiconic language' 				`TITLE		INFO .!
 	'Dmitry Ponyatov <<dponyatov@gmail.com>>'	`AUTHOR		INFO .!
-\ .
+	'https://bitbucket.org/ponyatov/fly/'		`GITHUB		INFO .!
+	'CC BY-NC-ND'								`LICENSE	INFO .!
+.
+
+`README.md file
 ??

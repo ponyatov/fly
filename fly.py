@@ -46,6 +46,8 @@ class Frame:
         return self.nest[-1]
     def pop(self):
         return self.nest.pop()
+    def dropall(self):
+        self.nest = []
     
     ## execution & code generation
     
@@ -84,6 +86,8 @@ class Meta(Frame): pass
 
 class Module(Meta): pass
 
+class File(Meta): pass
+
 ######################################################### virtual FORTH machine
 
 S = Stack('DATA')
@@ -92,14 +96,6 @@ W = Dict('FORTH')
 
 W['W'] = W
 W['S'] = S
-
-############################################################### metaprogramming
-
-def META(): S // Meta(S.pop().val)
-W << META
-
-def MODULE(): S // Module(S.pop().val)
-W << MODULE
 
 ################################################################# manipulations
 
@@ -113,13 +109,32 @@ W['.!'] = Cmd(pST)
 def LSHIFT(): B = S.pop() ; S.top() << B
 W['<<'] = Cmd(LSHIFT)
 
+######################################################################### stack
+
+def DROPALL(): S.dropall()
+W['.'] = Cmd(DROPALL)
+
 ######################################################################### debug
 
 def BYE(): sys.exit(0)
 W << BYE
 
+def Q(): print S
+W['?'] = Cmd(Q,I=True)
+
 def QQ(): print W ; BYE()
 W['??'] = Cmd(QQ,I=True)
+
+############################################################### metaprogramming
+
+def META(): S // Meta(S.pop().val)
+W << META
+
+def MODULE(): S // Module(S.pop().val)
+W << MODULE
+
+def FILE(): S // File(S.pop().val)
+W << FILE
 
 ############################################################# PLY powered lexer
 
