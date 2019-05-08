@@ -1,2 +1,8 @@
 # fly : frame homoiconic language
 
+W `INFO meta <<
+	`fly module									`MODULE 	INFO .!
+	'frame homoiconic language' 				`TITLE		INFO .!
+	'Dmitry Ponyatov <<dponyatov@gmail.com>>'	`AUTHOR		INFO .!
+\ .
+??
